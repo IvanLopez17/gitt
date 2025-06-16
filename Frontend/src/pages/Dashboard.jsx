@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { fetchVentas, addVenta, deleteVenta, updateVenta, fetchReportes } from '../services/api';
+import { fetchVentas, addVenta, deleteVenta } from '../services/api';
 import { UserContext } from '../context/UserContext';
 
 export default function Dashboard() {
@@ -21,18 +21,21 @@ export default function Dashboard() {
     try {
       const res = await fetchVentas(token);
       setVentas(res.data.ventas);
-      const totalVentas = res.data.ventas.reduce((sum, v) => sum + parseFloat(v.total_venta), 0);
-      const totalComisiones = res.data.ventas.reduce((sum, v) => sum + parseFloat(v.comision), 0);
+      const totalVentas = res.data.ventas.reduce((sum, v) => sum + parseFloat(v.total_venta || 0), 0);
+      const totalComisiones = res.data.ventas.reduce((sum, v) => sum + parseFloat(v.comision || 0), 0);
       setTotal(totalVentas);
       setTotalComision(totalComisiones);
     } catch (error) {
+      console.error('Error al cargar ventas:', error);
       setError('Error al cargar las ventas');
     }
   };
 
   useEffect(() => { 
-    cargarVentas(); 
-  }, []);
+    if (token) {
+      cargarVentas(); 
+    }
+  }, [token]);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -49,6 +52,7 @@ export default function Dashboard() {
       cargarVentas();
       setTimeout(() => setMsg(''), 3000);
     } catch (e) {
+      console.error('Error al registrar venta:', e);
       setError(e.response?.data?.message || 'Error al registrar venta');
     } finally {
       setLoading(false);
@@ -63,6 +67,7 @@ export default function Dashboard() {
         cargarVentas();
         setTimeout(() => setMsg(''), 3000);
       } catch (error) {
+        console.error('Error al eliminar venta:', error);
         setError('Error al eliminar la venta');
       }
     }
@@ -72,10 +77,11 @@ export default function Dashboard() {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP'
-    }).format(amount);
+    }).format(amount || 0);
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('es-CO');
   };
 
@@ -83,7 +89,7 @@ export default function Dashboard() {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="user-info">
-          {user.image && (
+          {user?.image && (
             <img 
               src={user.image} 
               alt="Perfil" 
@@ -94,8 +100,8 @@ export default function Dashboard() {
             />
           )}
           <div className="user-details">
-            <h2>Bienvenido, {user.name}</h2>
-            <span className="user-role">{user.role}</span>
+            <h2>Bienvenido, {user?.name || 'Usuario'}</h2>
+            <span className="user-role">{user?.role || 'N/A'}</span>
           </div>
         </div>
         <button className="btn-secondary" onClick={logout}>
@@ -121,7 +127,7 @@ export default function Dashboard() {
         </div>
 
         {/* Formulario de registro */}
-        {(user.role === 'ASESOR' || user.role === 'ADMIN') && (
+        {(user?.role === 'ASESOR' || user?.role === 'ADMIN') && (
           <div className="form-section">
             <h4>📝 Registrar Nueva Venta</h4>
             <form onSubmit={handleAdd}>
@@ -199,7 +205,7 @@ export default function Dashboard() {
                   <th>Total</th>
                   <th>Comisión</th>
                   <th>Asesor</th>
-                  {user.role === 'ADMIN' && <th>Acciones</th>}
+                  {user?.role === 'ADMIN' && <th>Acciones</th>}
                 </tr>
               </thead>
               <tbody>
@@ -243,7 +249,7 @@ export default function Dashboard() {
                         {venta.asesor?.name || 'N/A'}
                       </div>
                     </td>
-                    {user.role === 'ADMIN' && (
+                    {user?.role === 'ADMIN' && (
                       <td>
                         <div className="table-actions">
                           <button 
