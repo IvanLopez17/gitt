@@ -5,7 +5,7 @@ import {
   updateVenta,
   deleteVenta,
   getReportes
-} from '../controllers/ventasController.js';
+} from '../controller/ventasController.js';
 import { authMiddleware, isAdmin, isAsesor } from '../middleware/auth.js';
 
 const router = express.Router();

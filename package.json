@@ -1,0 +1,14 @@
+{
+  "name": "travel-agency-system",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend/api && npm run dev",
+    "frontend": "cd Frontend && npm run dev",
+    "install-all": "npm install && cd backend/api && npm install && cd ../../Frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

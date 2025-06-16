@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import UserProvider, { UserContext } from './context/UserContext.jsx';
-import Login from './pages/Login.jsx';
-import Register from './pages/Register.jsx';
-import Dashboard from './pages/Dashboard.jsx';
+import UserProvider, { UserContext } from './src/context/UserContext.jsx';
+import Login from './src/pages/Login.jsx';
+import Register from './src/pages/Register.jsx';
+import Dashboard from './src/pages/Dashboard.jsx';
+import './src/styles/global.css';
 
 function App() {
   return (
